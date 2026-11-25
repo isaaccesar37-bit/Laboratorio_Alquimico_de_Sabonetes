@@ -1,6 +1,6 @@
 {
-  "name": "Laboratório Alquímico de Sabonetes",
-  "short_name": "Laboratório Alquímico",
+  "name": "Laboratório",
+  "short_name": "Laboratório",
   "lang": "pt-BR",
   "start_url": "./index.html",
   "scope": "./",
@@ -9,16 +9,16 @@
   "theme_color": "#0f0720",
   "icons": [
     {
-      "sizes": "192x192",
-      "src": "team-wizards-192.png",
-      "purpose": "any maskable",
-      "type": "image/png"
+      "purpose": "any",
+      "type": "image/png",
+      "src": "logo-techwizards-192.png",
+      "sizes": "192x192"
     },
     {
-      "sizes": "512x512",
-      "src": "team-wizards-512.png",
-      "purpose": "any maskable",
-      "type": "image/png"
+      "purpose": "any",
+      "type": "image/png",
+      "src": "logo-techwizards-512.png",
+      "sizes": "512x512"
     }
   ]
 }
