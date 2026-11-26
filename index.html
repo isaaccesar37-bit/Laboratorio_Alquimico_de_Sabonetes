@@ -239,7 +239,7 @@
         </div>
     </header>
 
-<div id="settings-modal" class="hidden fixed inset-0 z-[100] bg-black/75 items-center justify-center p-4" role="dialog" aria-modal="true"><section class="w-full max-w-md bg-purple-950 border-2 border-fuchsia-400 rounded-2xl p-5"><h2 class="text-xl font-black mb-4">⚙️ Tempo por modo</h2><label for="timer-easy-input">Modo Aprendiz (segundos)</label><input id="timer-easy-input" type="number" min="10" max="600" step="5" class="w-full mb-4 p-3 text-black"><label for="timer-hard-input">Modo Alquimista (segundos)</label><input id="timer-hard-input" type="number" min="10" max="600" step="5" class="w-full p-3 text-black"><div class="flex justify-end gap-2 mt-4"><button onclick="closeSettings()">Cancelar</button><button onclick="saveSettings()">Salvar</button></div></section></div>
+<div id="settings-modal" class="hidden fixed inset-0 z-[100] bg-black/75 items-center justify-center p-4" role="dialog" aria-modal="true"><section class="w-full max-w-md bg-purple-950 border-2 border-fuchsia-400 rounded-2xl p-5"><h2 class="text-xl font-black mb-4">⚙️ Tempo por modo</h2><label for="timer-easy-input">Modo Aprendiz (segundos)</label><input id="timer-easy-input" type="number" min="10" max="600" step="5" class="w-full mb-4 p-3 text-black"><label for="timer-hard-input">Modo Alquimista (segundos)</label><input id="timer-hard-input" type="number" min="10" max="600" step="5" class="w-full p-3 text-black"><div class="grid grid-cols-2 gap-3 mt-4"><div><label for="order-min-input">Mínimo de sabonetes</label><input id="order-min-input" type="number" min="1" max="6" step="1" class="w-full p-3 text-black"></div><div><label for="order-max-input">Máximo de sabonetes</label><input id="order-max-input" type="number" min="1" max="6" step="1" class="w-full p-3 text-black"></div></div><div class="flex justify-end gap-2 mt-4"><button onclick="closeSettings()">Cancelar</button><button onclick="saveSettings()">Salvar</button></div></section></div>
     <!-- Main Content -->
     <main class="flex-grow container mx-auto p-3 sm:p-4 md:p-8 flex flex-col md:flex-row gap-6 md:gap-8 items-start">
         
@@ -680,6 +680,7 @@
         const roundTimerDisplay = document.getElementById('round-timer');
         const roundTimerHint = document.getElementById('round-timer-hint');
         const ROUND_DURATIONS = { easy: Number(localStorage.getItem('timer-easy')) || 45, hard: Number(localStorage.getItem('timer-hard')) || 60 };
+        const ORDER_RANGE = { min: Number(localStorage.getItem("order-min")) || 2, max: Number(localStorage.getItem("order-max")) || 5 };
         function getRoundDurationSeconds() {
             return ROUND_DURATIONS[gameMode] || ROUND_DURATIONS.easy;
         }
@@ -1108,9 +1109,9 @@
 
         document.addEventListener('fullscreenchange', updateFullscreenButtons);
         updateFullscreenButtons();
-        function openSettings(){document.getElementById('timer-easy-input').value=ROUND_DURATIONS.easy;document.getElementById('timer-hard-input').value=ROUND_DURATIONS.hard;const m=document.getElementById('settings-modal');m.classList.remove('hidden');m.classList.add('flex');}
+        function openSettings(){document.getElementById('timer-easy-input').value=ROUND_DURATIONS.easy;document.getElementById('timer-hard-input').value=ROUND_DURATIONS.hard;document.getElementById('order-min-input').value=ORDER_RANGE.min;document.getElementById('order-max-input').value=ORDER_RANGE.max;const m=document.getElementById('settings-modal');m.classList.remove('hidden');m.classList.add('flex');}
         function closeSettings(){const m=document.getElementById('settings-modal');m.classList.add('hidden');m.classList.remove('flex');}
-        function saveSettings(){const e=Number(document.getElementById('timer-easy-input').value),h=Number(document.getElementById('timer-hard-input').value);if(![e,h].every(v=>Number.isInteger(v)&&v>=10&&v<=600)){alert('Informe tempos inteiros entre 10 e 600 segundos.');return;}ROUND_DURATIONS.easy=e;ROUND_DURATIONS.hard=h;localStorage.setItem('timer-easy',e);localStorage.setItem('timer-hard',h);resetRoundTimer();closeSettings();}
+        function saveSettings(){const e=Number(document.getElementById('timer-easy-input').value),h=Number(document.getElementById('timer-hard-input').value),min=Number(document.getElementById('order-min-input').value),max=Number(document.getElementById('order-max-input').value);if(![e,h].every(v=>Number.isInteger(v)&&v>=10&&v<=600)){alert('Informe tempos inteiros entre 10 e 600 segundos.');return;}if(!Number.isInteger(min)||!Number.isInteger(max)||min<1||max>6||min>max){alert('Informe uma quantidade mínima e máxima entre 1 e 6, com o máximo igual ou maior que o mínimo.');return;}ROUND_DURATIONS.easy=e;ROUND_DURATIONS.hard=h;ORDER_RANGE.min=min;ORDER_RANGE.max=max;localStorage.setItem('timer-easy',e);localStorage.setItem('timer-hard',h);localStorage.setItem('order-min',min);localStorage.setItem('order-max',max);resetRoundTimer();closeSettings();}
         let installPromptEvent=null;
         window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPromptEvent=e;const b=document.getElementById('install-btn');b.classList.remove('hidden');b.classList.add('inline-flex');});
         async function installGame(){if(!installPromptEvent)return;installPromptEvent.prompt();await installPromptEvent.userChoice;installPromptEvent=null;document.getElementById('install-btn').classList.add('hidden');}
@@ -1132,7 +1133,7 @@
 
         function startNewRound() {
                         resetRoundTimer();
-            orderMultiplier = Math.floor(Math.random() * 4) + 2;
+            orderMultiplier = Math.floor(Math.random() * (ORDER_RANGE.max - ORDER_RANGE.min + 1)) + ORDER_RANGE.min;
             orderQuantityDisplay.innerText = `${orderMultiplier} Sabonete${orderMultiplier > 1 ? 's' : ''}`;
 
             const roundTracker = document.getElementById('round-tracker');
